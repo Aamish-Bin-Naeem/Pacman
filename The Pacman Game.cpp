@@ -1,15 +1,42 @@
 #include <iostream>
-#include <string>
-#include <cstdlib>
+#include <conio.h>
+#include <Windows.h>
 #include <ctime>
+
 using namespace std;
 
 // Function prototypes
 int UserPrompt();
 void grid_one();
-void pacman();
+void mapDisplay();
 
-char map[18][32];
+const int GRID_HEIGHT = 18;
+const int GRID_WIDTH = 32;
+
+char map[GRID_HEIGHT][GRID_WIDTH] = {
+    "_______________________________",
+    "|                             |",
+    "|                             |",
+    "|__ ___________ __   _________|",
+    "|   |                         |",
+    "| | |--  |              |     |",
+    "| |      |    |---  |   |  |  |",
+    "| |  ----|    |      -  |     |",
+    "| |           |---  |      |  |",
+    "| |----  --          --       |",
+    "|          ------  ------- ---|",
+    "|               |             |",
+    "|_ --- ----      ---   -------|",
+    "|                             |",
+    "| ___       |---     |        |",
+    "|       |---|        |    ----|",
+    "|                    |        |",
+    "_______________________________"
+};
+
+/* void setConsoleColor(int color) {
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+} */
 
 int main() {
     int user_input = UserPrompt();
@@ -22,8 +49,8 @@ int main() {
             cin.ignore();
             getline(cin, playerName);
 
-            // Display grid options
-            cout << "\nPress 1 to dive in the game:\n";
+            // Display 'dive-in game' options
+            cout << "\nPress 1 to dive into the game:\n";
 
             int selectedGrid;
             cout << "Enter your choice: ";
@@ -43,9 +70,6 @@ int main() {
             break;
         }
         case 2:
-            // Show leaderboard stats
-            break;
-        case 3:
             // Exit the program
             cout << "Exiting the program. Goodbye!\n";
             return 0;
@@ -58,56 +82,72 @@ int main() {
 }
 
 int UserPrompt() {
-    // cout << "===========================================\n\n";
     cout << "Welcome to Pacman!\n\n";
     cout << "1- Start Game\n";
-    cout << "2- Leaderboard Stats\n";
-    cout << "3- Exit\n";
+    cout << "2- Exit\n";
 
     int user_input;
     do {
-        cout << "Enter your choice (1-3): ";
+        cout << "Enter your choice (1-2): ";
         cin >> user_input;
-    } while (user_input < 1 || user_input > 3);
+    } while (user_input < 1 || user_input > 2);
 
     return user_input;
 }
 
 void grid_one() {
-	int x, y;
-    for (int i=0;i<10;i++) {
-    	for (int j=0; j<15; j++) {
-    		x = rand() %32;
-    		y = rand() %18;
-    	if ( i%5 == 0) {
-		map[x][y] = '|';
-	    } else {
-    		map[x][y] = '-';
-		}
-	}
-} 
+    // initial character position
+    int posx = 1;
+    int posy = 1;
+    map[posx][posy] = 'P'; // 'P' = the character
 
-	
+    while (true) {
+        // Display map
+        mapDisplay();
 
-	for (int i = 0; i< 18; i++) {
-		for ( int j = 0; j<32; j++) {
-			cout << map[i][j];
-		}
-		cout << endl;
-	}
-	
-	char map_copy[18][32];
-	
-	for (int i = 0; i< 18; i++) {
-		for ( int j = 0; j<32; j++) {
-			map_copy [i][j] = map[i][j];
-		}
-	}
+        // user input for movement
+        char move = _getch(); // capture arrow key presses
 
-  }
-  
-  void pacman() {
-  	map[0][1] = 'P';
-  }
+        // Update character position based on user input
+        switch (move) {
+            case 72: // Up arrow key
+                if (posx > 0 && map[posx - 1][posy] == ' ') {
+                    map[posx][posy] = ' ';
+                    posx--;
+                    map[posx][posy] = 'P';
+                }
+                break;
+            case 75: // Left arrow key
+                if (posy > 0 && map[posx][posy - 1] == ' ') {
+                    map[posx][posy] = ' ';
+                    posy--;
+                    map[posx][posy] = 'P';
+                }
+                break;
+            case 80: // Down arrow key
+                if (posx < GRID_HEIGHT - 1 && map[posx + 1][posy] == ' ') {
+                    map[posx][posy] = ' ';
+                    posx++;
+                    map[posx][posy] = 'P';
+                }
+                break;
+            case 77: // Right arrow key
+                if (posy < GRID_WIDTH - 1 && map[posx][posy + 1] == ' ') {
+                    map[posx][posy] = ' ';
+                    posy++;
+                    map[posx][posy] = 'P';
+                }
+                break;
+            default:
+                break;
+        }
+    }
+}
 
-
+void mapDisplay() {
+    system("CLS"); // Clear the console screen
+    // Display the map
+    for (int i = 0; i < GRID_HEIGHT; i++) {
+        cout << map[i] << endl;
+    }
+}
